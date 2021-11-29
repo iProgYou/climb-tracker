@@ -1,5 +1,6 @@
 from climb import Climb
 from statistics import mean,median,mode
+from datetime import datetime
 
 class Session():
 
@@ -23,7 +24,7 @@ class Session():
     POINT_MAP = {k:v for (v,k) in zip(GRADES,range(0,len(GRADES) * 2,2))}
 
     def __init__(self, date,climbs):
-        self.date = date
+        self.date = datetime.strptime(date,"%m/%d/%Y")
         # climbs are in the array based on the order they were done
         self.climbs = [Climb(self.date,climb) for climb in climbs]
 
@@ -124,6 +125,7 @@ if __name__ == "__main__":
         "5.10c:f",
         "5.10d"
     ])
+    print(s.date)
     types = [None,"completed","incomplete","flashed"]
     tend_types = ["mean","median","mode"]
     for t in types:
