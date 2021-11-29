@@ -26,7 +26,7 @@ class Session():
     def __init__(self, date,climbs):
         self.date = datetime.strptime(date,"%m/%d/%Y")
         # climbs are in the array based on the order they were done
-        self.climbs = [Climb(self.date,climb) for climb in climbs]
+        self.climbs = [Climb(date,climb) for climb in climbs]
 
 
     def mean_grade(self,climb_type=None):
