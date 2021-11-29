@@ -1,5 +1,3 @@
-from datetime import datetime
-
 class Climb():
     """
         A Climb() is an attempt at a route.
@@ -9,7 +7,7 @@ class Climb():
         self.completed = None
         self.flashed = None
 
-        self.date = datetime.strptime(date,"%m/%d/%Y")
+        self.date = date
         self.write_attributes(climb_data)
 
     def write_attributes(self,climb_data):
