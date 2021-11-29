@@ -7,18 +7,7 @@ class Session():
     GRADES = [
         "5.8",
         "5.9",
-        "5.10a", 
-        "5.10b", 
-        "5.10c", 
-        "5.10d",
-        "5.11a", 
-        "5.11b", 
-        "5.11c", 
-        "5.11d",
-        "5.12a", 
-        "5.12b", 
-        "5.12c", 
-        "5.12d",
+        *[f"5.{i}{a}" for a in "abcd" for i in range(10,13)]
     ]
     GRADE_MAP = {k:v for (k,v) in zip(GRADES,range(0,len(GRADES) * 2,2))}
     POINT_MAP = {k:v for (v,k) in zip(GRADES,range(0,len(GRADES) * 2,2))}
