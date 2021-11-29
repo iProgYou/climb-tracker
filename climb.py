@@ -25,8 +25,3 @@ class Climb():
             self.completed = True
             self.flashed = False
         
-
-if __name__ == "__main__":
-    c = Climb("11/29/2021","5.10c:-")
-
-    print(c)

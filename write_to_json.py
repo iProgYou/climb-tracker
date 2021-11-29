@@ -2,7 +2,6 @@ import json
 import re
 from collections import defaultdict
 
-
 data = {}
 
 def read_data(file):
