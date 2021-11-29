@@ -17,26 +17,6 @@ class Session():
         # climbs are in the array based on the order they were done
         self.climbs = [Climb(self.date,climb) for climb in climbs]
 
-
-    def mean_grade(self,climb_type=None):
-
-        climbs = self.climb_points(climb_type)
-
-        if not climbs:
-            return None
-
-        return self.get_grade_from_points(mean(climbs))
-
-    def median_grade(self,climb_type=None):
-        climbs = self.climb_points(climb_type)
-    
-        return self.get_grade_from_points(median(climbs))
-
-    def mode_grade(self,climb_type=None):
-        climbs = self.climb_points(climb_type)
-
-        return self.get_grade_from_points(mode(climbs))
-
     def central_tend(self,tend_type,climb_type=None,as_grade=True):
         tend_type = tend_type.lower()
 
