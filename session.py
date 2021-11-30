@@ -7,7 +7,7 @@ class Session():
     GRADES = [
         "5.8",
         "5.9",
-        *[f"5.{i}{a}" for a in "abcd" for i in range(10,13)]
+        *[f"5.{i}{a}" for i in range(10,13) for a in "abcd"]
     ]
 
     GRADE_MAP = {k:v for (k,v) in zip(GRADES,range(0,len(GRADES) * 2,2))}
