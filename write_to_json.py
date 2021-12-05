@@ -4,6 +4,8 @@ import os
 from collections import defaultdict
 import sys
 
+print("Converting text data to json")
+
 data_prefix = "climbing_data"
 
 data = {}
@@ -34,3 +36,5 @@ output_path = os.path.join(data_prefix,'climbing_data.json')
 
 with open(output_path,'w') as outfile:
     json.dump(data,outfile,indent=4)
+
+print("___________________________________\n")

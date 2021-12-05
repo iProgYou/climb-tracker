@@ -15,7 +15,7 @@ class Session():
 
     def __init__(self, date,climbs):
         self.date = datetime.strptime(date,"%m/%d/%Y")
-        # climbs are in the array based on the order they were done
+        # climbs are in the array based on the order they were climbed
         self.climbs = [Climb(self.date,climb) for climb in climbs]
 
     def central_tend(self,tend_type,climb_type=None,as_grade=True):
@@ -47,7 +47,7 @@ class Session():
             if lower_grade.endswith('d'):
                 # 5.11d/12a
                 lower_grade_int = int(lower_grade[2:-1])
-                return '5.' + str(lower_grade_int) + 'd' + str(lower_grade_int + 1) + 'a'
+                return '5.' + str(lower_grade_int) + 'd'  + "/" + str(lower_grade_int + 1) + 'a'
             else:
                 # 5.11a/b
 
@@ -55,15 +55,17 @@ class Session():
                 return lower_grade + '/' + higher_grade[-1]
 
     def climb_points(self,climb_type):
+        return [self.GRADE_MAP[c.grade] for c in self.climb_grades(climb_type)]
+
+    def climb_grades(self,climb_type):
         if not climb_type:
-            # max of all climbs
-            return [self.GRADE_MAP[c.grade] for c in self.climbs]
+            return [c for c in self.climbs]
         elif climb_type == "completed":
-            return [self.GRADE_MAP[c.grade] for c in self.climbs if c.completed]
+            return [c for c in self.climbs if c.completed]
         elif climb_type == "flashed":
-            return [self.GRADE_MAP[c.grade] for c in self.climbs if c.flashed]
+            return [c for c in self.climbs if c.flashed]
         elif climb_type == "incomplete":
-            return [self.GRADE_MAP[c.grade] for c in self.climbs if not c.completed]
+            return [c for c in self.climbs if not c.completed]
         else:
             raise "Invalid climb type input"
 
@@ -77,8 +79,17 @@ class Session():
         min_climb = min(climbs)
         return self.POINT_MAP[min_climb]
 
-    def num_climbs(self,climb_type=None):
-        return len(self.climb_points(climb_type))
+    def num_climbs(self,climb_type=None,grade_number=None,):
+        # grade number would be the 10 in "5.10a" etc
+        if not grade_number:
+            return len(self.climb_grades(climb_type))
+        
+        if grade_number not in range(8,13):
+            raise "Invalid grade error passed"
+
+        return len([c for c in self.climb_grades(climb_type) if str(grade_number) in c.grade])
+
+        # return len([ ])
 
     def climb_ratio(self,numerator_climb_type=None,denom_climb_type=None):
         return self.num_climbs(climb_type=numerator_climb_type) / self.num_climbs(climb_type=denom_climb_type)
@@ -89,14 +100,16 @@ class Session():
 if __name__ == "__main__":
     s = Session("11/28/2021",[
         "5.10a:F",
-        "5.10a",
+        "5.11a",
         "5.10c:f",
         "5.10d:-",
         "5.10c",
         "5.10c:f",
-        "5.10d"
+        "5.12d"
     ])
     print(s.date)
+    for i in range(8,13):
+        print(f"Num 5.{i}'s climbed: {s.num_climbs(grade_number=i)}")
     types = [None,"completed","incomplete","flashed"]
     tend_types = ["mean","median","mode"]
     for t in types:
