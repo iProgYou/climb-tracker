@@ -1,5 +1,6 @@
 import json
 from session import Session
+import sys
 
 """
     - Histogram of flashes per session
@@ -8,7 +9,7 @@ from session import Session
     - average incomplete grade per session
 """
 
-fp = open("dummy_climbing_data.json")
+fp = open(sys.argv[1])
 
 data = json.load(fp)
 names = data.keys()
@@ -21,3 +22,6 @@ else:
 
 name_data = data[name]
 sessions_list = sorted([Session(date,climbs) for date,climbs in name_data.items()],key=lambda s: s.date)
+
+if __name__ == "__main__":
+    print(sessions_list)

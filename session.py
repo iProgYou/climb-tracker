@@ -83,7 +83,8 @@ class Session():
     def climb_ratio(self,numerator_climb_type=None,denom_climb_type=None):
         return self.num_climbs(climb_type=numerator_climb_type) / self.num_climbs(climb_type=denom_climb_type)
 
-
+    def __repr__(self):
+        return f"Session date: {self.date}"
 
 if __name__ == "__main__":
     s = Session("11/28/2021",[

@@ -1,6 +1,10 @@
 import json
 import re
+import os
 from collections import defaultdict
+import sys
+
+data_prefix = "climbing_data"
 
 data = {}
 
@@ -20,10 +24,13 @@ def read_data(file):
 
     return file_data
 
-with open('peter_climbing_data.txt') as peter, open('zack_climbing_data.txt') as zack:
-    data['peter'] = read_data(peter)
-    data['zack'] = read_data(zack)
+for path in sys.argv[1:]:
+    filepath = os.path.join(data_prefix,path)
+    name = path.split('.')[0]
+    print(name)
+    data[name] = read_data(open(filepath))
 
+output_path = os.path.join(data_prefix,'climbing_data.json')
 
-with open('climbing_data.json','w') as outfile:
+with open(output_path,'w') as outfile:
     json.dump(data,outfile,indent=4)
