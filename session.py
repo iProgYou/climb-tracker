@@ -1,22 +1,18 @@
 from climb import Climb
 from statistics import mean,median,mode
 from datetime import datetime
+from grade_constants import GRADES,GRADE_MAP,POINT_MAP
 
 class Session():
 
-    GRADES = [
-        "5.8",
-        "5.9",
-        *[f"5.{i}{a}" for i in range(10,13) for a in "abcd"]
-    ]
-
-    GRADE_MAP = {k:v for (k,v) in zip(GRADES,range(0,len(GRADES) * 2,2))}
-    POINT_MAP = {k:v for (v,k) in zip(GRADES,range(0,len(GRADES) * 2,2))}
-
-    def __init__(self, date,climbs):
+    def __init__(self, date,climbs,climber_name):
         self.date = datetime.strptime(date,"%m/%d/%y")
+        self.climber_name = climber_name
         # climbs are in the array based on the order they were climbed
         self.climbs = [Climb(self.date,climb) for climb in climbs]
+
+    def date_no_seconds(self):
+        return self.date.strftime("%m/%d/%y")
 
     def central_tend(self,tend_type,climb_type=None,as_grade=True):
         tend_type = tend_type.lower()
@@ -44,11 +40,11 @@ class Session():
         
 
     def get_grade_from_points(self,total_points):
-        if total_points in self.POINT_MAP:
-            return self.POINT_MAP[total_points]
+        if total_points in POINT_MAP:
+            return POINT_MAP[total_points]
         else:
             # odd number point grade
-            lower_grade = self.POINT_MAP[total_points - 1]
+            lower_grade = POINT_MAP[total_points - 1]
             if lower_grade.endswith('d'):
                 # 5.11d/12a
                 lower_grade_int = int(lower_grade[2:-1])
@@ -56,23 +52,23 @@ class Session():
             else:
                 # 5.11a/b
 
-                higher_grade = self.POINT_MAP[total_points + 1]
+                higher_grade = POINT_MAP[total_points + 1]
                 return lower_grade + '/' + higher_grade[-1]
 
 
-    def climb_points(self,climb_type):
-        return [self.GRADE_MAP[c.grade] for c in self.climb_grades(climb_type)]
+    def climb_points(self,climb_type=None):
+        return [GRADE_MAP[c] for c in self.climb_grades(climb_type)]
 
 
-    def climb_grades(self,climb_type):
+    def climb_grades(self,climb_type=None):
         if not climb_type:
-            return [c for c in self.climbs]
+            return [c.grade for c in self.climbs]
         elif climb_type == "completed":
-            return [c for c in self.climbs if c.completed]
+            return [c.grade for c in self.climbs if c.completed]
         elif climb_type == "flashed":
-            return [c for c in self.climbs if c.flashed]
+            return [c.grade for c in self.climbs if c.flashed]
         elif climb_type == "incomplete":
-            return [c for c in self.climbs if not c.completed]
+            return [c.grade for c in self.climbs if not c.completed]
         else:
             raise "Invalid climb type input"
 
@@ -82,7 +78,7 @@ class Session():
         if len(climbs) == 0:
             return None
         max_climb = max(climbs)
-        return self.POINT_MAP[max_climb]
+        return POINT_MAP[max_climb]
 
 
     def min_grade(self,climb_type=None):
@@ -90,7 +86,7 @@ class Session():
         if len(climbs) == 0:
             return None
         min_climb = min(climbs)
-        return self.POINT_MAP[min_climb]
+        return POINT_MAP[min_climb]
 
 
     def num_climbs(self,climb_type=None,grade_number=None,):
@@ -101,7 +97,7 @@ class Session():
         if grade_number not in range(8,13):
             raise "Invalid grade error passed"
 
-        return len([c for c in self.climb_grades(climb_type) if str(grade_number) in c.grade])
+        return len([c for c in self.climb_grades(climb_type) if str(grade_number) in c])
 
 
     def climb_ratio(self,numerator_climb_type=None,denom_climb_type=None):
@@ -133,6 +129,7 @@ class Session():
             print("_________________")
 
 
+
 if __name__ == "__main__":
     s = Session("11/28/21",[
         "5.10a:F",
@@ -142,7 +139,7 @@ if __name__ == "__main__":
         "5.10c",
         "5.10c:f",
         "5.12d"
-    ])
+    ],"Alf")
     print(s.date)
     print(s.central_tend("mean"))
     # print(s.recap())
