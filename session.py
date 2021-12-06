@@ -14,7 +14,7 @@ class Session():
     POINT_MAP = {k:v for (v,k) in zip(GRADES,range(0,len(GRADES) * 2,2))}
 
     def __init__(self, date,climbs):
-        self.date = datetime.strptime(date,"%m/%d/%Y")
+        self.date = datetime.strptime(date,"%m/%d/%y")
         # climbs are in the array based on the order they were climbed
         self.climbs = [Climb(self.date,climb) for climb in climbs]
 
@@ -22,11 +22,16 @@ class Session():
         tend_type = tend_type.lower()
 
         climbs = self.climb_points(climb_type)
+        if len(climbs) == 0:
+            return None
 
         if tend_type == "mean":
             res = mean(climbs)
         elif tend_type == "mode":
-            res = mode(climbs)
+            try:
+                res = mode(climbs)
+            except:
+                return None
         elif tend_type == "median":
             res = median(climbs)
         else:
@@ -54,8 +59,10 @@ class Session():
                 higher_grade = self.POINT_MAP[total_points + 1]
                 return lower_grade + '/' + higher_grade[-1]
 
+
     def climb_points(self,climb_type):
         return [self.GRADE_MAP[c.grade] for c in self.climb_grades(climb_type)]
+
 
     def climb_grades(self,climb_type):
         if not climb_type:
@@ -69,15 +76,22 @@ class Session():
         else:
             raise "Invalid climb type input"
 
+
     def max_grade(self,climb_type=None):
         climbs = self.climb_points(climb_type)
+        if len(climbs) == 0:
+            return None
         max_climb = max(climbs)
         return self.POINT_MAP[max_climb]
 
+
     def min_grade(self,climb_type=None):
         climbs = self.climb_points(climb_type)
+        if len(climbs) == 0:
+            return None
         min_climb = min(climbs)
         return self.POINT_MAP[min_climb]
+
 
     def num_climbs(self,climb_type=None,grade_number=None,):
         # grade number would be the 10 in "5.10a" etc
@@ -89,16 +103,38 @@ class Session():
 
         return len([c for c in self.climb_grades(climb_type) if str(grade_number) in c.grade])
 
-        # return len([ ])
 
     def climb_ratio(self,numerator_climb_type=None,denom_climb_type=None):
         return self.num_climbs(climb_type=numerator_climb_type) / self.num_climbs(climb_type=denom_climb_type)
 
+
     def __repr__(self):
         return f"Session date: {self.date}"
 
+
+    def recap(self):
+        for i in range(8,13):
+            print(f"Num 5.{i}'s climbed: {self.num_climbs(grade_number=i)}")
+
+        print("____________________________________")
+        types = [None,"completed","flashed","incomplete"]
+        tend_types = ["mean","median","mode"]
+        for t in types:
+            if not t:
+                print(f"ALL CLIMBS : {self.num_climbs(t)}")
+            else:
+                print(t.capitalize(),f": {self.num_climbs(t)}")
+
+            for tend in tend_types:
+                print(f"{tend}: ",self.central_tend(tend,climb_type=t))
+                # print(f"{tend} as points: ",self.central_tend(tend,climb_type=t,as_grade=False))
+            print("Max",self.max_grade(climb_type=t))
+            print("Min",self.min_grade(climb_type=t))
+            print("_________________")
+
+
 if __name__ == "__main__":
-    s = Session("11/28/2021",[
+    s = Session("11/28/21",[
         "5.10a:F",
         "5.11a",
         "5.10c:f",
@@ -108,19 +144,5 @@ if __name__ == "__main__":
         "5.12d"
     ])
     print(s.date)
-    for i in range(8,13):
-        print(f"Num 5.{i}'s climbed: {s.num_climbs(grade_number=i)}")
-    types = [None,"completed","incomplete","flashed"]
-    tend_types = ["mean","median","mode"]
-    for t in types:
-        if not t:
-            print(f"ALL CLIMBS : {s.num_climbs(t)}")
-        else:
-            print(t.capitalize(),f": {s.num_climbs(t)}")
-
-        for tend in tend_types:
-            print(f"{tend} as grade: ",s.central_tend(tend,climb_type=t))
-            print(f"{tend} as points: ",s.central_tend(tend,climb_type=t,as_grade=False))
-        print("Max",s.max_grade(climb_type=t))
-        print("Min",s.min_grade(climb_type=t))
-        print("_________________")
+    print(s.central_tend("mean"))
+    # print(s.recap())
