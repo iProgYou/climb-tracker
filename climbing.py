@@ -6,11 +6,12 @@ from climb_plot import ClimbPlot
 
 """
     - Histogram of flashes per session
-    - Average completed grade per session
     - Max grade completed per session
-    - average incomplete grade per session
-    - average completed per session over number of routes attempted
-    - and overlay of each climb of each session
+    - Average incomplete grade per session
+    - Average completed per session over number of routes attempted
+    
+    - Line graph of each climb per session on top of eachother
+    - Average completed grade per session
 """
 
 fp = open(sys.argv[1])
@@ -26,6 +27,4 @@ sessions_list = sorted([Session(date,climbs,name) for date,climbs in name_data.i
 
 plotter = ClimbPlot(sessions_list)
 plotter.overlay_days()
-# if __name__ == "__main__":
-#     for s in sessions_list:
-#         print(s.recap())
+plotter.average_over_time(climb_type="flashed")

@@ -5,16 +5,20 @@ from grade_constants import GRADES,GRADE_MAP,POINT_MAP
 
 class Session():
 
-    def __init__(self, date,climbs,climber_name):
+    def __init__(self, date,climbs,climber_name,include_laps=False):
         self.date = datetime.strptime(date,"%m/%d/%y")
         self.climber_name = climber_name
+
         # climbs are in the array based on the order they were climbed
-        self.climbs = [Climb(self.date,climb) for climb in climbs]
+        self.climbs = [Climb(self.date,climbs[i],i + 1) for i in range(len(climbs))]
+        if not include_laps:
+            self.climbs = list(filter(lambda x: not x.is_lap,self.climbs))
+
 
     def date_no_seconds(self):
         return self.date.strftime("%m/%d/%y")
 
-    def central_tend(self,tend_type,climb_type=None,as_grade=True):
+    def central_tend(self,tend_type,climb_type=None,as_grade=False):
         tend_type = tend_type.lower()
 
         climbs = self.climb_points(climb_type)
@@ -59,34 +63,42 @@ class Session():
     def climb_points(self,climb_type=None):
         return [GRADE_MAP[c] for c in self.climb_grades(climb_type)]
 
-
-    def climb_grades(self,climb_type=None):
+    def climb_objs(self,climb_type=None):
         if not climb_type:
-            return [c.grade for c in self.climbs]
+            return self.climbs
         elif climb_type == "completed":
-            return [c.grade for c in self.climbs if c.completed]
+            return [c for c in self.climbs if c.completed]
         elif climb_type == "flashed":
-            return [c.grade for c in self.climbs if c.flashed]
+            return [c for c in self.climbs if c.flashed]
         elif climb_type == "incomplete":
-            return [c.grade for c in self.climbs if not c.completed]
+            return [c for c in self.climbs if not c.completed]
         else:
             raise "Invalid climb type input"
 
+    def climb_grades(self,climb_type=None):
+        return [c.grade for c in self.climb_objs(climb_type)] 
 
-    def max_grade(self,climb_type=None):
+
+    def max_grade(self,climb_type=None,as_points=False):
         climbs = self.climb_points(climb_type)
         if len(climbs) == 0:
             return None
         max_climb = max(climbs)
-        return POINT_MAP[max_climb]
+        if as_points:
+            return max_climb
+        else:
+            return POINT_MAP[max_climb]
 
 
-    def min_grade(self,climb_type=None):
+    def min_grade(self,climb_type=None,as_points=False):
         climbs = self.climb_points(climb_type)
         if len(climbs) == 0:
             return None
         min_climb = min(climbs)
-        return POINT_MAP[min_climb]
+        if as_points:
+            return min_climb
+        else:
+            return POINT_MAP[min_climb]
 
 
     def num_climbs(self,climb_type=None,grade_number=None,):

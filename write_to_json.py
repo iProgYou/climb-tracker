@@ -21,6 +21,8 @@ def read_data(file):
         if matcher.match(line):
             current_date = line
         else:
+            if '5' not in line:
+                line = '5.' + line
             file_data[current_date].append(line)        
 
     return file_data
